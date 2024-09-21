@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+// src/pages/NotificationPage.js
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { NotificationContext } from '../contexts/NotificationContext';
 import NotificationList from '../components/NotificationList';
@@ -35,15 +36,43 @@ const FilterButton = styled.button`
     color: ${({ theme }) => theme.colors.white};
   }
 `;
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+`;
+
+const PageButton = styled.button`
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: ${({ active, theme }) =>
+    active ? theme.colors.primary : theme.colors.background};
+  color: ${({ active, theme }) =>
+    active ? theme.colors.white : theme.colors.text};
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+  border-radius: 4px;
+  cursor: pointer;
+`;
 
 const NotificationsPage = () => {
-  const { notifications } = useContext(NotificationContext);
+  const { notifications, fetchNotifications, totalPages, currentPage } = useContext(NotificationContext);
   const [filter, setFilter] = React.useState('all');
+
+  useEffect(() => {
+    fetchNotifications(currentPage)
+  }, [currentPage, fetchNotifications])
+  
 
   const filteredNotifications = React.useMemo(() => {
     if (filter === 'all') return notifications;
     return notifications.filter((notification) => notification.type === filter);
   }, [notifications, filter]);
+
+
+  const handlePageChange = (newPage) => {
+    fetchNotifications(newPage)
+  }
+
 
   return (
     <PageContainer>
@@ -74,7 +103,17 @@ const NotificationsPage = () => {
           Commission Changes
         </FilterButton>
       </FilterContainer>
+
       <NotificationList notifications={filteredNotifications} />
+      <PaginationContainer>
+        {Array.from({length: totalPages}, (_, i) => i + 1).map((page) => (
+          <PageButton
+          key={page}
+          active={page === currentPage}
+          onClick={() => handlePageChange(page)}
+          >{page}</PageButton>
+        ))}
+      </PaginationContainer>
     </PageContainer>
   );
 };

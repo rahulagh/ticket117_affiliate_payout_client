@@ -1,4 +1,4 @@
-// Notification.js
+// src/components/Notification.js
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { NotificationContext } from '../contexts/NotificationContext';
@@ -34,17 +34,19 @@ const Timestamp = styled.span`
 const Notification = ({ notification }) => {
   const { markAsRead } = useContext(NotificationContext);
 
-  const handleClick = () => {
-    if (!notification.read) {
-      markAsRead(notification.id);
-    }
-  };
+  // const handleClick = () => {
+  //   if (!notification.read) {
+  //     markAsRead(notification.id);
+  //   }
+  // };
 
   return (
-    <NotificationItem read={notification.read} onClick={handleClick}>
-      <Title>{notification.title}</Title>
+    <NotificationItem read={notification.read} 
+    // onClick={handleClick}
+    >
+      <Title>{notification.title || 'Notification'}</Title>
       <Message>{notification.message}</Message>
-      <Timestamp>{new Date(notification.timestamp).toLocaleString()}</Timestamp>
+      <Timestamp>{new Date(notification.createdAt).toLocaleString()}</Timestamp>
     </NotificationItem>
   );
 };
